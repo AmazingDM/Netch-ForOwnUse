@@ -1,6 +1,9 @@
 name: Netch CI
 
-on: push
+on:
+  push:
+    tags:
+      - '1.*.*'
 
 jobs:
   build:
