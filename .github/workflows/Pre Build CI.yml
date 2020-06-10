@@ -1,9 +1,7 @@
 name: Pre Build CI
 
-on:
-  push:
-    tags:
-      - 'Pre*.*.*'
+on: push
+
 jobs:
   build:
     name: Build
@@ -37,14 +35,14 @@ jobs:
       with:
         name: Netch
         path: Netch\bin\x64\Release\win-x64
-  
+          
     - name: Release
       uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: Pre Release
+        tag_name: Pre-${{github.sha}}
+        name: Pre Release - ${{github.sha}}
         prerelease: true
         draft: false
         files: |
