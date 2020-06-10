@@ -41,8 +41,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
-        tag_name: Pre-${{github.sha}}
-        name: Pre Release - ${{github.sha}}
+        tag_name: Pre-${{github.run_id}}
+        name: Pre Release - ${{github.run_id}}
         prerelease: true
         draft: false
         files: |
