@@ -52,6 +52,8 @@
             this.ControlButton = new System.Windows.Forms.Button();
             this.GlobalBypassIPsButton = new System.Windows.Forms.Button();
             this.BehaviorGroupBox = new System.Windows.Forms.GroupBox();
+            this.LanguageLabel = new System.Windows.Forms.Label();
+            this.LanguageComboBox = new System.Windows.Forms.ComboBox();
             this.UDPServerCheckBox = new System.Windows.Forms.CheckBox();
             this.UDPServerComboBox = new System.Windows.Forms.ComboBox();
             this.ProcessWhitelistModeCheckbox = new System.Windows.Forms.CheckBox();
@@ -74,8 +76,7 @@
             this.StartWhenOpenedCheckBox = new System.Windows.Forms.CheckBox();
             this.StopWhenExitedCheckBox = new System.Windows.Forms.CheckBox();
             this.ExitWhenClosedCheckBox = new System.Windows.Forms.CheckBox();
-            this.LanguageLabel = new System.Windows.Forms.Label();
-            this.LanguageComboBox = new System.Windows.Forms.ComboBox();
+            this.ProcessNoProxyForUdpcheckBox = new System.Windows.Forms.CheckBox();
             this.PortGroupBox.SuspendLayout();
             this.TUNTAPGroupBox.SuspendLayout();
             this.BehaviorGroupBox.SuspendLayout();
@@ -302,6 +303,7 @@
             // 
             // BehaviorGroupBox
             // 
+            this.BehaviorGroupBox.Controls.Add(this.ProcessNoProxyForUdpcheckBox);
             this.BehaviorGroupBox.Controls.Add(this.LanguageLabel);
             this.BehaviorGroupBox.Controls.Add(this.LanguageComboBox);
             this.BehaviorGroupBox.Controls.Add(this.UDPServerCheckBox);
@@ -333,14 +335,32 @@
             this.BehaviorGroupBox.TabStop = false;
             this.BehaviorGroupBox.Text = "Behavior";
             // 
+            // LanguageLabel
+            // 
+            this.LanguageLabel.AutoSize = true;
+            this.LanguageLabel.Location = new System.Drawing.Point(12, 336);
+            this.LanguageLabel.Name = "LanguageLabel";
+            this.LanguageLabel.Size = new System.Drawing.Size(65, 17);
+            this.LanguageLabel.TabIndex = 26;
+            this.LanguageLabel.Text = "Language";
+            // 
+            // LanguageComboBox
+            // 
+            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LanguageComboBox.FormattingEnabled = true;
+            this.LanguageComboBox.Location = new System.Drawing.Point(120, 333);
+            this.LanguageComboBox.Name = "LanguageComboBox";
+            this.LanguageComboBox.Size = new System.Drawing.Size(121, 25);
+            this.LanguageComboBox.TabIndex = 25;
+            // 
             // UDPServerCheckBox
             // 
             this.UDPServerCheckBox.AutoSize = true;
             this.UDPServerCheckBox.Location = new System.Drawing.Point(206, 129);
             this.UDPServerCheckBox.Name = "UDPServerCheckBox";
-            this.UDPServerCheckBox.Size = new System.Drawing.Size(75, 21);
+            this.UDPServerCheckBox.Size = new System.Drawing.Size(148, 21);
             this.UDPServerCheckBox.TabIndex = 24;
-            this.UDPServerCheckBox.Text = "神秘开关";
+            this.UDPServerCheckBox.Text = "神秘开关（UDP分流）";
             this.UDPServerCheckBox.UseVisualStyleBackColor = true;
             this.UDPServerCheckBox.CheckedChanged += new System.EventHandler(this.UDPServerCheckBox_CheckedChanged);
             // 
@@ -542,23 +562,15 @@
             this.ExitWhenClosedCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.ExitWhenClosedCheckBox.UseVisualStyleBackColor = true;
             // 
-            // LanguageLabel
+            // ProcessNoProxyForUdpcheckBox
             // 
-            this.LanguageLabel.AutoSize = true;
-            this.LanguageLabel.Location = new System.Drawing.Point(12, 336);
-            this.LanguageLabel.Name = "LanguageLabel";
-            this.LanguageLabel.Size = new System.Drawing.Size(65, 17);
-            this.LanguageLabel.TabIndex = 26;
-            this.LanguageLabel.Text = "Language";
-            // 
-            // LanguageComboBox
-            // 
-            this.LanguageComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.LanguageComboBox.FormattingEnabled = true;
-            this.LanguageComboBox.Location = new System.Drawing.Point(120, 333);
-            this.LanguageComboBox.Name = "LanguageComboBox";
-            this.LanguageComboBox.Size = new System.Drawing.Size(121, 25);
-            this.LanguageComboBox.TabIndex = 25;
+            this.ProcessNoProxyForUdpcheckBox.AutoSize = true;
+            this.ProcessNoProxyForUdpcheckBox.Location = new System.Drawing.Point(287, 337);
+            this.ProcessNoProxyForUdpcheckBox.Name = "ProcessNoProxyForUdpcheckBox";
+            this.ProcessNoProxyForUdpcheckBox.Size = new System.Drawing.Size(136, 21);
+            this.ProcessNoProxyForUdpcheckBox.TabIndex = 27;
+            this.ProcessNoProxyForUdpcheckBox.Text = "进程模式不代理UDP";
+            this.ProcessNoProxyForUdpcheckBox.UseVisualStyleBackColor = true;
             // 
             // SettingForm
             // 
@@ -639,5 +651,6 @@
         private System.Windows.Forms.ComboBox UDPServerComboBox;
         private System.Windows.Forms.Label LanguageLabel;
         private System.Windows.Forms.ComboBox LanguageComboBox;
+        private System.Windows.Forms.CheckBox ProcessNoProxyForUdpcheckBox;
     }
 }

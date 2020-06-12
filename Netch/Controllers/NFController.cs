@@ -236,14 +236,22 @@ namespace Netch.Controllers
 
             fallback += $" -p \"{processes}\"";
 
+            if (!Global.Settings.ProcessNoProxyForUdp)
+            {
+                //开启进程UDP代理
+                fallback += " -udpEnable true";
+            }
+            else
+            {
+                fallback += " -udpEnable false";
+            }
+
             Utils.Logging.Info($"Redirector : {fallback}");
 
             if (File.Exists("logging\\redirector.log"))
                 File.Delete("logging\\redirector.log");
 
             Instance.StartInfo.Arguments = fallback;
-            Instance.OutputDataReceived += OnOutputDataReceived;
-            Instance.ErrorDataReceived += OnOutputDataReceived;
             State = Models.State.Starting;
             Instance.Start();
             Instance.BeginOutputReadLine();
@@ -251,11 +259,27 @@ namespace Netch.Controllers
 
             for (var i = 0; i < 1000; i++)
             {
-                Thread.Sleep(10);
-
-                if (State == Models.State.Started)
+                try
                 {
-                    return true;
+                    if (File.Exists("logging\\redirector.log"))
+                    {
+                        FileStream fs = new FileStream("logging\\redirector.log", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                        StreamReader sr = new StreamReader(fs, System.Text.Encoding.Default);
+
+                        if (sr.ReadToEnd().Contains("Redirect TCP to"))
+                        {
+                            State = Models.State.Started;
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Utils.Logging.Info(e.Message);
+                }
+                finally
+                {
+                    Thread.Sleep(10);
                 }
             }
 
@@ -333,50 +357,6 @@ namespace Netch.Controllers
                 return false;
             }
             return true;
-        }
-
-        public void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(e.Data))
-            {
-                File.AppendAllText("logging\\redirector.log", string.Format("{0}\r\n", e.Data));
-
-                if (State == Models.State.Starting)
-                {
-                    if (Instance.HasExited)
-                    {
-                        State = Models.State.Stopped;
-                    }
-                    else if (e.Data.Contains("Started") || e.Data.Contains("Redirect TCP to"))
-                    {
-                        State = Models.State.Started;
-                    }
-                    else if (e.Data.Contains("Failed") || e.Data.Contains("Unable"))
-                    {
-                        State = Models.State.Stopped;
-                    }
-                }
-                else if (State == Models.State.Started)
-                {
-                    if (e.Data.StartsWith("[APP][Bandwidth]"))
-                    {
-                        var splited = e.Data.Replace("[APP][Bandwidth]", "").Trim().Split(',');
-                        if (splited.Length == 2)
-                        {
-                            var uploadSplited = splited[0].Split(':');
-                            var downloadSplited = splited[1].Split(':');
-
-                            if (uploadSplited.Length == 2 && downloadSplited.Length == 2)
-                            {
-                                if (long.TryParse(uploadSplited[1], out var upload) && long.TryParse(downloadSplited[1], out var download))
-                                {
-                                    Task.Run(() => OnBandwidthUpdated(upload, download));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private string StartUDPServer(string fallback)

@@ -107,6 +107,8 @@ namespace Netch.Forms
             ProcessWhitelistModeCheckbox.Text = Utils.i18N.Translate(ProcessWhitelistModeCheckbox.Text);
             ProcessWhitelistModeCheckbox.Checked = Global.Settings.ProcessWhitelistMode;
 
+            ProcessNoProxyForUdpcheckBox.Checked = Global.Settings.ProcessNoProxyForUdp;
+
             UDPServerCheckBox.Checked = Global.Settings.UDPServer;
             if (Global.Settings.UDPServer)
             {
@@ -184,7 +186,8 @@ namespace Netch.Forms
             Global.Settings.UDPServer = UDPServerCheckBox.Checked;
             Global.Settings.UDPServerIndex = UDPServerComboBox.SelectedIndex - 1;
             Global.Settings.Language = LanguageComboBox.SelectedItem.ToString();
-
+            Global.Settings.ProcessNoProxyForUdp = ProcessNoProxyForUdpcheckBox.Checked;
+            
             // 加载系统语言
             if (Global.Settings.Language.Equals("System"))
             {

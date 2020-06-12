@@ -198,5 +198,10 @@ namespace Netch.Models
         ///     语言设置
         /// </summary>
         public string Language = "System";
+
+        /// <summary>
+        ///     进程模式不代理UDP
+        /// </summary>
+        public bool ProcessNoProxyForUdp = false;
     }
 }
