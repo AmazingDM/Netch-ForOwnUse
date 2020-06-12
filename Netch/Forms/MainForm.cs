@@ -381,6 +381,7 @@ namespace Netch.Forms
             StatusLabel.Text = $@"{Utils.i18N.Translate("Status")}{Utils.i18N.Translate(": ")}{Utils.i18N.Translate("Waiting for command")}";
             ShowMainFormToolStripButton.Text = Utils.i18N.Translate(ShowMainFormToolStripButton.Text);
             ExitToolStripButton.Text = Utils.i18N.Translate(ExitToolStripButton.Text);
+            RelyToolStripMenuItem.Text = Utils.i18N.Translate(RelyToolStripMenuItem.Text);
 
             InitProfile();
 
@@ -1560,6 +1561,11 @@ namespace Netch.Forms
                     Enabled = true;
                 }
             });
+        }
+
+        private void RelyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start($"https://mega.nz/file/9OQ1EazJ#0pjJ3xt57AVLr29vYEEv15GSACtXVQOGlEOPpi_2Ico");
         }
     }
 }
