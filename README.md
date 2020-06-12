@@ -14,6 +14,7 @@
 
 ## 相比原版Netch新增特性
 - 进程白名单模式（全局）
+- 进程模式可设置不代理UDP
 - TCP UDP分流（支持Socks、SS、SSR、Trojan）
 - 允许多开Netch（进程模式因驱动限制无法多开）
 - 流量统计（如无bug将合并Netch主仓库）
