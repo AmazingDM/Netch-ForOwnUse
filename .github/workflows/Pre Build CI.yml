@@ -48,9 +48,10 @@ jobs:
         files: |
           C:\builtfiles\Netch.zip
         body: |
-
           [![](https://img.shields.io/badge/Telegram-Channel-blue)](https://t.me/Netch) [![](https://img.shields.io/badge/Telegram-Group-green)](https://t.me/Netch_Discuss_Group)
-
+          
+          ${{ github.event.head_commit.message }}
+          
           ## 校验和
           | 文件名 | SHA256 |
           | :- | :- |
