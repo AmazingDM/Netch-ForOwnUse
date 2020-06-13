@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
@@ -154,7 +155,10 @@ namespace Netch.Controllers
                 }
             }
 
+            //代理进程
             var processes = "";
+            //IP过滤
+            var processesIPFillter = "";
 
             //开启进程白名单模式
             if (!Global.Settings.ProcessWhitelistMode)
@@ -164,8 +168,18 @@ namespace Netch.Controllers
 
             foreach (var proc in mode.Rule)
             {
-                processes += proc;
-                processes += ",";
+                //添加进程代理
+                if (proc.EndsWith(".exe"))
+                {
+                    processes += proc;
+                    processes += ",";
+                }
+                else
+                {
+                    //添加IP过滤器
+                    processesIPFillter += proc;
+                    processesIPFillter += ",";
+                }
             }
             processes = processes.Substring(0, processes.Length - 1);
 
@@ -235,6 +249,35 @@ namespace Netch.Controllers
             }
 
             fallback += $" -p \"{processes}\"";
+            fallback += $" -fip \"{processesIPFillter}\"";
+
+            // true  除规则内IP全走代理
+            // false 仅代理规则内IP
+            if (processesIPFillter.Length > 0)
+            {
+                if (mode.ProcesssIPFillter)
+                {
+                    fallback += $" -bypassip true";
+                }
+                else
+                {
+                    fallback += $" -bypassip false";
+                }
+            }
+            else
+            {
+                fallback += $" -bypassip true";
+            }
+
+            //进程模式代理IP日志打印
+            if (Global.Settings.ProcessProxyIPLog)
+            {
+                fallback += " -printProxyIP true";
+            }
+            else
+            {
+                fallback += " -printProxyIP false";
+            }
 
             if (!Global.Settings.ProcessNoProxyForUdp)
             {

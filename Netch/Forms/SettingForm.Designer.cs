@@ -52,6 +52,7 @@
             this.ControlButton = new System.Windows.Forms.Button();
             this.GlobalBypassIPsButton = new System.Windows.Forms.Button();
             this.BehaviorGroupBox = new System.Windows.Forms.GroupBox();
+            this.ProcessNoProxyForUdpcheckBox = new System.Windows.Forms.CheckBox();
             this.LanguageLabel = new System.Windows.Forms.Label();
             this.LanguageComboBox = new System.Windows.Forms.ComboBox();
             this.UDPServerCheckBox = new System.Windows.Forms.CheckBox();
@@ -76,7 +77,7 @@
             this.StartWhenOpenedCheckBox = new System.Windows.Forms.CheckBox();
             this.StopWhenExitedCheckBox = new System.Windows.Forms.CheckBox();
             this.ExitWhenClosedCheckBox = new System.Windows.Forms.CheckBox();
-            this.ProcessNoProxyForUdpcheckBox = new System.Windows.Forms.CheckBox();
+            this.PrintProxyIPCheckBox = new System.Windows.Forms.CheckBox();
             this.PortGroupBox.SuspendLayout();
             this.TUNTAPGroupBox.SuspendLayout();
             this.BehaviorGroupBox.SuspendLayout();
@@ -282,7 +283,7 @@
             // ControlButton
             // 
             this.ControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ControlButton.Location = new System.Drawing.Point(804, 384);
+            this.ControlButton.Location = new System.Drawing.Point(978, 384);
             this.ControlButton.Name = "ControlButton";
             this.ControlButton.Size = new System.Drawing.Size(75, 23);
             this.ControlButton.TabIndex = 11;
@@ -303,6 +304,7 @@
             // 
             // BehaviorGroupBox
             // 
+            this.BehaviorGroupBox.Controls.Add(this.PrintProxyIPCheckBox);
             this.BehaviorGroupBox.Controls.Add(this.ProcessNoProxyForUdpcheckBox);
             this.BehaviorGroupBox.Controls.Add(this.LanguageLabel);
             this.BehaviorGroupBox.Controls.Add(this.LanguageComboBox);
@@ -330,10 +332,20 @@
             this.BehaviorGroupBox.Controls.Add(this.ExitWhenClosedCheckBox);
             this.BehaviorGroupBox.Location = new System.Drawing.Point(438, 12);
             this.BehaviorGroupBox.Name = "BehaviorGroupBox";
-            this.BehaviorGroupBox.Size = new System.Drawing.Size(441, 366);
+            this.BehaviorGroupBox.Size = new System.Drawing.Size(615, 366);
             this.BehaviorGroupBox.TabIndex = 8;
             this.BehaviorGroupBox.TabStop = false;
             this.BehaviorGroupBox.Text = "Behavior";
+            // 
+            // ProcessNoProxyForUdpcheckBox
+            // 
+            this.ProcessNoProxyForUdpcheckBox.AutoSize = true;
+            this.ProcessNoProxyForUdpcheckBox.Location = new System.Drawing.Point(437, 22);
+            this.ProcessNoProxyForUdpcheckBox.Name = "ProcessNoProxyForUdpcheckBox";
+            this.ProcessNoProxyForUdpcheckBox.Size = new System.Drawing.Size(136, 21);
+            this.ProcessNoProxyForUdpcheckBox.TabIndex = 27;
+            this.ProcessNoProxyForUdpcheckBox.Text = "进程模式不代理UDP";
+            this.ProcessNoProxyForUdpcheckBox.UseVisualStyleBackColor = true;
             // 
             // LanguageLabel
             // 
@@ -562,21 +574,21 @@
             this.ExitWhenClosedCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.ExitWhenClosedCheckBox.UseVisualStyleBackColor = true;
             // 
-            // ProcessNoProxyForUdpcheckBox
+            // PrintProxyIPCheckBox
             // 
-            this.ProcessNoProxyForUdpcheckBox.AutoSize = true;
-            this.ProcessNoProxyForUdpcheckBox.Location = new System.Drawing.Point(287, 337);
-            this.ProcessNoProxyForUdpcheckBox.Name = "ProcessNoProxyForUdpcheckBox";
-            this.ProcessNoProxyForUdpcheckBox.Size = new System.Drawing.Size(136, 21);
-            this.ProcessNoProxyForUdpcheckBox.TabIndex = 27;
-            this.ProcessNoProxyForUdpcheckBox.Text = "进程模式不代理UDP";
-            this.ProcessNoProxyForUdpcheckBox.UseVisualStyleBackColor = true;
+            this.PrintProxyIPCheckBox.AutoSize = true;
+            this.PrintProxyIPCheckBox.Location = new System.Drawing.Point(437, 53);
+            this.PrintProxyIPCheckBox.Name = "PrintProxyIPCheckBox";
+            this.PrintProxyIPCheckBox.Size = new System.Drawing.Size(146, 21);
+            this.PrintProxyIPCheckBox.TabIndex = 28;
+            this.PrintProxyIPCheckBox.Text = "进程模式打印已代理IP";
+            this.PrintProxyIPCheckBox.UseVisualStyleBackColor = true;
             // 
             // SettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(891, 418);
+            this.ClientSize = new System.Drawing.Size(1065, 418);
             this.Controls.Add(this.BehaviorGroupBox);
             this.Controls.Add(this.PortGroupBox);
             this.Controls.Add(this.GlobalBypassIPsButton);
@@ -652,5 +664,6 @@
         private System.Windows.Forms.Label LanguageLabel;
         private System.Windows.Forms.ComboBox LanguageComboBox;
         private System.Windows.Forms.CheckBox ProcessNoProxyForUdpcheckBox;
+        private System.Windows.Forms.CheckBox PrintProxyIPCheckBox;
     }
 }

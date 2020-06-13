@@ -175,6 +175,20 @@ namespace Netch.Forms
                                     break;
                                 }
 
+                                if (text.Contains("IPFillter=true"))
+                                {
+                                    mode.ProcesssIPFillter = true;
+                                }
+                                else if (text.Contains("IPFillter=false"))
+                                {
+                                    mode.ProcesssIPFillter = false;
+                                }
+                                else
+                                {
+                                    //默认 除规则内IP全走代理
+                                    mode.ProcesssIPFillter = true;
+                                }
+
                                 if (splited.Length >= 1)
                                 {
                                     mode.Remark = Utils.i18N.Translate(splited[0].Trim());
