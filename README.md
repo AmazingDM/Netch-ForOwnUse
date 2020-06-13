@@ -29,7 +29,6 @@
 
 ```
 # test, 0
-ntt
 ntt.exe
 Desktop
 Desktop\NatTypeTester.exe
@@ -48,7 +47,6 @@ false 仅代理规则内 IP
 
 ```
 # test(IPFillter=true), 0
-ntt
 ntt.exe
 test.exe
 Desktop
