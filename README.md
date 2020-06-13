@@ -17,6 +17,8 @@
 
 -   进程白名单模式（全局）
 -   进程模式可设置不代理 UDP
+-   进程模式IP过滤器
+-   进程模式已代理IP(TCP&UDP)日志打印
 -   TCP UDP 分流（支持 Socks、SS、SSR、Trojan）
 -   允许多开 Netch（进程模式因驱动限制无法多开）
 -   流量统计（如无 bug 将合并 Netch 主仓库）
