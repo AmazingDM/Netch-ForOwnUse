@@ -896,7 +896,7 @@ namespace Netch.Forms
                         Task.Run(() =>
                         {
                             LastUploadBandwidth = 0;
-                            LastDownloadBandwidth = 0;
+                            //LastDownloadBandwidth = 0;
                             //UploadSpeedLabel.Text = "↑: 0 KB/s";
                             DownloadSpeedLabel.Text = "↑↓: 0 KB/s";
                             UsedBandwidthLabel.Text = $"{Utils.i18N.Translate("Used")}{Utils.i18N.Translate(": ")}0 KB";

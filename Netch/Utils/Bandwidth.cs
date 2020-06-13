@@ -55,19 +55,23 @@ namespace Netch.Utils
             {
                 processList.Add(mainController.pHTTPController.pPrivoxyController.Instance.Id);
             }
-            else if (mainController.pSSController != null)
+            else if (server.Type.Equals("SS") && Global.Settings.BootShadowsocksFromDLL)
+            {
+                processList.Add(Process.GetCurrentProcess().Id);
+            }
+            else if (server.Type.Equals("SS") && mainController.pSSController != null)
             {
                 processList.Add(mainController.pSSController.Instance.Id);
             }
-            else if (mainController.pSSRController != null)
+            else if (server.Type.Equals("SSR") && mainController.pSSRController != null)
             {
                 processList.Add(mainController.pSSRController.Instance.Id);
             }
-            else if (mainController.pVMessController != null)
+            else if (server.Type.Equals("VMess") && mainController.pVMessController != null)
             {
                 processList.Add(mainController.pVMessController.Instance.Id);
             }
-            else if (mainController.pTrojanController != null)
+            else if (server.Type.Equals("TR") && mainController.pTrojanController != null)
             {
                 processList.Add(mainController.pTrojanController.Instance.Id);
             }
@@ -78,10 +82,6 @@ namespace Netch.Utils
             else if (mainController.pNFController != null)
             {
                 processList.Add(mainController.pNFController.Instance.Id);
-            }
-            else if (Global.Settings.BootShadowsocksFromDLL)
-            {
-                processList.Add(Process.GetCurrentProcess().Id);
             }
             Logging.Info("启动流量统计 PID：" + string.Join(",", processList.ToArray()));
 
@@ -116,6 +116,11 @@ namespace Netch.Utils
                 }
             });
 
+            if ((Convert.ToInt32(MainForm.Instance.LastDownloadBandwidth) - Convert.ToInt32(received)) == 0)
+            {
+                MainForm.Instance.OnBandwidthUpdated(0);
+                received = 0;
+            }
             while (MainForm.Instance.State != Models.State.Stopped)
             {
                 Task.Delay(1000).Wait();
