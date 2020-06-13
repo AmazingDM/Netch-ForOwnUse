@@ -35,9 +35,9 @@ C:\Users\xxxx\Desktop\NatTypeTester.exe
 - [Netch](#Netch)
 	- [TOC](#TOC)
 	- [简介](#简介)
-    - [新手入门](Quickstart.zh-CN.md)
+    - [新手入门](doc/Quickstart.zh-CN.md)
     - [进阶用法](https://github.com/NormanBB/NetchMode/blob/master/docs/README.zh-CN.md)
-	- [依赖](#依赖)
+	- [依赖（必装，否则会启动失败）](#依赖（必装，否则会启动失败）)
     - [语言支持](#语言支持)
     
 ## 简介
