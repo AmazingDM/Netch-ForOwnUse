@@ -9,8 +9,6 @@ assignees: ''
 
 **Make sure you have read the readme, searched and read the issues related to yours. Otherwise it will be considered as a duplicate which will be closed immediately.**
 
-**All issues about `bin/Redirector.exe` should be discussed at [issue #152](https://github.com/NetchX/Netch/issues/152).**
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
