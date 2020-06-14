@@ -39,7 +39,7 @@ C:\Users\xxxx\Desktop\NatTypeTester.exe
 
 -   IP 过滤器
 
-高阶用法，启用 IP 过滤器需要在模式`备注`加上 `IPFillter=true`，并且规则内需要有 IPV4（匹配模式往下看） ，Netch 会根据文件名里的 IPFillter 来配置开关，没加过滤器开关时默认为 true，注意`IP过滤器`仅在 TCP 生效
+高阶用法，启用 IP 过滤器需要在模式`备注`加上 `IPFillter=true`，并且规则内需要有 IPV4（匹配模式往下看） ，Netch 会根据模式备注里的 IPFillter 来配置开关，没加过滤器开关时默认为 true，注意`IP过滤器`仅在 TCP 生效
 
 true 除规则内 IP 全走代理
 
