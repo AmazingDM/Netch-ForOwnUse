@@ -235,12 +235,7 @@ namespace Netch.Controllers
             //开启进程白名单模式
             if (Global.Settings.ProcessWhitelistMode)
             {
-                processes += ",netch.exe";
-                processes += ",Shadowsocks.exe,simple-obfs.exe";
-                processes += ",ShadowsocksR.exe";
-                processes += ",Privoxy.exe";
-                processes += ",Trojan.exe";
-                processes += ",v2ray.exe,v2ctl.exe,v2ray-plugin.exe";
+                processes += ",ck-client.exe,Privoxy.exe,Redirector.exe,Shadowsocks.exe,ShadowsocksR.exe,simple-obfs.exe,Trojan.exe,tun2socks.exe,unbound.exe,v2ctl.exe,v2ray-plugin.exe,v2ray.exe,wv2ray.exe,tapinstall.exe,Netch.exe";
                 fallback += " -bypass true ";
             }
             else
