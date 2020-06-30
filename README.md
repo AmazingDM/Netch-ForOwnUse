@@ -13,6 +13,8 @@
 
 [网站](https://netch.org/)
 
+[FAQ/常见问题](https://netch.org/#/docs/zh-CN/faq)
+
 ## 相比原版 Netch 新增特性
 
 -   进程白名单模式（全局）
