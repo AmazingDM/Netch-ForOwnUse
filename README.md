@@ -23,7 +23,7 @@
 -   进程模式已代理IP(TCP&UDP)日志打印
 -   TCP UDP 分流（支持 Socks、SS、SSR、Trojan）
 -   允许多开 Netch（进程模式因驱动限制无法多开）
--   流量统计（如无 bug 将合并 Netch 主仓库）
+-   流量统计（已合并主仓库）
 
 ## 进程白名单模式
 
