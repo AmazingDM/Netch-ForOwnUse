@@ -309,8 +309,8 @@ namespace Netch.Forms
             this.VersionLabel.IsLink = true;
             this.VersionLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(26, 19);
-            this.VersionLabel.Text = "xxx";
+            this.VersionLabel.Size = new System.Drawing.Size(82, 19);
+            this.VersionLabel.Text = "DM bUg Ver";
             this.VersionLabel.Click += new System.EventHandler(this.VersionLabel_Click);
             // 
             // exitToolStripMenuItem

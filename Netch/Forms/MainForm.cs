@@ -56,7 +56,7 @@ namespace Netch.Forms
             // 监听电源事件
             SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
-            VersionLabel.Text = UpdateChecker.Version;
+            VersionLabel.Text += UpdateChecker.Version;
 
             CheckForIllegalCrossThreadCalls = false;
             // MenuStrip.Renderer = new Override.ToolStripProfessionalRender();
