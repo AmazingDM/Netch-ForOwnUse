@@ -244,7 +244,10 @@ namespace Netch.Controllers
             }
 
             fallback += $" -p \"{processes}\"";
-            fallback += $" -fip \"{processesIPFillter}\"";
+            if (processesIPFillter != "")
+            {
+                fallback += $" -fip \"{processesIPFillter}\"";
+            }
 
             // true  除规则内IP全走代理
             // false 仅代理规则内IP
