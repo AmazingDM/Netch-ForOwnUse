@@ -1,22 +1,19 @@
-﻿using Netch.Forms;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
+using Netch.Forms;
+using Netch.Models;
+using Netch.Utils;
+using nfapinet;
 
 namespace Netch.Controllers
 {
-    public class NFController
+    public class NFController : ModeController
     {
-        /// <summary>
-        ///     流量变动事件
-        /// </summary>
-        public event BandwidthUpdateHandler OnBandwidthUpdated;
-
         /// <summary>
         ///     流量变动处理器
         /// </summary>
@@ -25,134 +22,61 @@ namespace Netch.Controllers
         public delegate void BandwidthUpdateHandler(long upload, long download);
 
         /// <summary>
-        ///     进程实例
-        /// </summary>
-        public Process Instance;
-
-        /// <summary>
         ///     UDP代理进程实例
         /// </summary>
         public Process UDPServerInstance;
 
-        /// <summary>
-        ///     当前状态
-        /// </summary>
-        public Models.State State = Models.State.Waiting;
+        private readonly string _binDriverPath;
 
-        // 生成驱动文件路径
-        public string driverPath = string.Format("{0}\\drivers\\netfilter2.sys", Environment.SystemDirectory);
+        private readonly string _driverPath = $"{Environment.SystemDirectory}\\drivers\\netfilter2.sys";
+        private readonly ServiceController _service = new ServiceController("netfilter2");
+        private string _systemDriverVersion;
 
-        /// <summary>
-        ///		启动
-        /// </summary>
-        /// <param name="server">服务器</param>
-        /// <param name="mode">模式</param>
-        /// <param name="StopServiceAndRestart">先停止驱动服务再重新启动</param>
-        /// <returns>是否成功</returns>
-        public bool Start(Models.Server server, Models.Mode mode, bool StopServiceAndRestart)
+        public NFController()
         {
-            if (!StopServiceAndRestart)
-                MainForm.Instance.StatusText($"{Utils.i18N.Translate("Status")}{Utils.i18N.Translate(": ")}{Utils.i18N.Translate("Starting Redirector")}");
+            MainFile = "Redirector";
+            InitCheck();
 
-            if (!File.Exists("bin\\Redirector.exe"))
+            // 驱动版本
+            _systemDriverVersion = FileVersionInfo.GetVersionInfo(_driverPath).FileVersion;
+            // 生成系统版本
+            var winNTver = $"{Environment.OSVersion.Version.Major.ToString()}.{Environment.OSVersion.Version.Minor.ToString()}";
+            var driverName = "";
+            switch (winNTver)
             {
-                return false;
+                case "10.0":
+                    driverName = "Win-10.sys";
+                    break;
+                case "6.3":
+                case "6.2":
+                    driverName = "Win-8.sys";
+                    break;
+                case "6.1":
+                case "6.0":
+                    driverName = "Win-7.sys";
+                    break;
+                default:
+                    Logging.Error($"不支持的系统版本：{winNTver}");
+                    Ready = false;
+                    return;
             }
 
-            // 检查驱动是否存在
-            if (File.Exists(driverPath))
+            _binDriverPath = "bin\\" + driverName;
+        }
+
+        /// <summary>
+        ///     流量变动事件
+        /// </summary>
+        public event BandwidthUpdateHandler OnBandwidthUpdated;
+
+        public override bool Start(Server server, Mode mode)
+        {
+            if (!CheckDriverReady())
             {
-                // 生成系统版本
-                var version = $"{Environment.OSVersion.Version.Major.ToString()}.{Environment.OSVersion.Version.Minor.ToString()}";
-                var driverName = "";
-
-                switch (version)
-                {
-                    case "10.0":
-                        driverName = "Win-10.sys";
-                        break;
-                    case "6.3":
-                    case "6.2":
-                        driverName = "Win-8.sys";
-                        break;
-                    case "6.1":
-                    case "6.0":
-                        driverName = "Win-7.sys";
-                        break;
-                    default:
-                        Utils.Logging.Info($"不支持的系统版本：{version}");
-                        return false;
-                }
-
-                // 检查驱动版本号
-                FileVersionInfo SystemfileVerInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(driverPath);
-                FileVersionInfo BinFileVerInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(string.Format("bin\\{0}", driverName));
-
-                if (!SystemfileVerInfo.FileVersion.Equals(BinFileVerInfo.FileVersion))
-                {
-                    Utils.Logging.Info("开始更新驱动");
-                    // 需要更新驱动
-                    try
-                    {
-                        var service = new ServiceController("netfilter2");
-                        if (service.Status == ServiceControllerStatus.Running)
-                        {
-                            service.Stop();
-                            service.WaitForStatus(ServiceControllerStatus.Stopped);
-                        }
-                        nfapinet.NFAPI.nf_unRegisterDriver("netfilter2");
-
-                        //删除老驱动
-                        File.Delete(driverPath);
-                        if (!InstallDriver())
-                            return false;
-
-                        Utils.Logging.Info($"驱动更新完毕，当前驱动版本:{BinFileVerInfo.FileVersion}");
-                    }
-                    catch (Exception)
-                    {
-                        Utils.Logging.Info($"更新驱动出错");
-                    }
-
-                }
-
-            }
-            else
-            {
+                if (File.Exists(_driverPath))
+                    UninstallDriver();
                 if (!InstallDriver())
-                {
                     return false;
-                }
-            }
-
-            try
-            {
-                // 启动驱动服务
-                var service = new ServiceController("netfilter2");
-                if (service.Status == ServiceControllerStatus.Running && StopServiceAndRestart)
-                {
-                    // 防止其他程序占用 重置 NF 百万连接数限制
-                    service.Stop();
-                    service.WaitForStatus(ServiceControllerStatus.Stopped);
-                    MainForm.Instance.StatusText($"{Utils.i18N.Translate("Status")}{Utils.i18N.Translate(": ")}{Utils.i18N.Translate("Starting netfilter2 Service")}");
-                    service.Start();
-                }
-                else if (service.Status == ServiceControllerStatus.Stopped)
-                {
-                    MainForm.Instance.StatusText($"{Utils.i18N.Translate("Status")}{Utils.i18N.Translate(": ")}{Utils.i18N.Translate("Starting netfilter2 Service")}");
-                    service.Start();
-                }
-            }
-            catch (Exception e)
-            {
-                Utils.Logging.Info(e.ToString());
-
-                var result = nfapinet.NFAPI.nf_registerDriver("netfilter2");
-                if (result != nfapinet.NF_STATUS.NF_STATUS_SUCCESS)
-                {
-                    Utils.Logging.Info($"注册驱动失败，返回值：{result}");
-                    return false;
-                }
             }
 
             //代理进程
@@ -183,7 +107,7 @@ namespace Netch.Controllers
             }
             processes = processes.Substring(0, processes.Length - 1);
 
-            Instance = MainController.GetProcess();
+            Instance = GetProcess("bin\\Redirector.exe");
             var fallback = "";
 
 
@@ -201,10 +125,10 @@ namespace Netch.Controllers
             }
             else
             {
-                var result = Utils.DNS.Lookup(server.Hostname);
+                var result = DNS.Lookup(server.Hostname);
                 if (result == null)
                 {
-                    Utils.Logging.Info("无法解析服务器 IP 地址");
+                    Logging.Info("无法解析服务器 IP 地址");
                     return false;
                 }
 
@@ -244,27 +168,17 @@ namespace Netch.Controllers
             }
 
             fallback += $" -p \"{processes}\"";
-            if (processesIPFillter != "")
-            {
-                fallback += $" -fip \"{processesIPFillter}\"";
-            }
 
             // true  除规则内IP全走代理
             // false 仅代理规则内IP
-            if (processesIPFillter.Length > 0)
+            if (mode.ProcesssIPFillter() && processesIPFillter.Length > 0)
             {
-                if (mode.ProcesssIPFillter)
-                {
-                    fallback += $" -bypassip true";
-                }
-                else
-                {
-                    fallback += $" -bypassip false";
-                }
+                fallback += $" -bypassip true";
+                fallback += $" -fip \"{processesIPFillter}\"";
             }
             else
             {
-                fallback += $" -bypassip true";
+                fallback += $" -bypassip false";
             }
 
             //进程模式代理IP日志打印
@@ -287,7 +201,7 @@ namespace Netch.Controllers
                 fallback += " -udpEnable false";
             }
 
-            Utils.Logging.Info($"Redirector : {fallback}");
+            Logging.Info($"Redirector : {fallback}");
 
             if (File.Exists("logging\\redirector.log"))
                 File.Delete("logging\\redirector.log");
@@ -316,7 +230,7 @@ namespace Netch.Controllers
                 }
                 catch (Exception e)
                 {
-                    Utils.Logging.Info(e.Message);
+                    Logging.Info(e.Message);
                 }
                 finally
                 {
@@ -324,82 +238,163 @@ namespace Netch.Controllers
                 }
             }
 
-            Utils.Logging.Info("NF 进程启动超时");
+            Logging.Info("NF 进程启动超时");
             Stop();
             return false;
         }
 
-        /// <summary>
-        ///		停止
-        /// </summary>
-        public void Stop()
+        private bool RestartService()
         {
             try
             {
-                if (Instance != null && !Instance.HasExited)
+                switch (_service.Status)
                 {
-                    Instance.Kill();
-                    Instance.WaitForExit();
-                }
-                if (UDPServerInstance != null && !UDPServerInstance.HasExited)
-                {
-                    UDPServerInstance.Kill();
-                    UDPServerInstance.WaitForExit();
+                    // 启动驱动服务
+                    case ServiceControllerStatus.Running:
+                        // 防止其他程序占用 重置 NF 百万连接数限制
+                        _service.Stop();
+                        _service.WaitForStatus(ServiceControllerStatus.Stopped);
+                        MainForm.Instance.StatusText(i18N.Translate("Starting netfilter2 Service"));
+                        _service.Start();
+                        break;
+                    case ServiceControllerStatus.Stopped:
+                        MainForm.Instance.StatusText(i18N.Translate("Starting netfilter2 Service"));
+                        _service.Start();
+                        break;
                 }
             }
             catch (Exception e)
             {
-                Utils.Logging.Info(e.ToString());
-            }
-        }
-        public bool InstallDriver()
-        {
+                Logging.Error("启动驱动服务失败：\n" + e);
 
-            Utils.Logging.Info("安装驱动中");
-            // 生成系统版本
-            var version = $"{Environment.OSVersion.Version.Major.ToString()}.{Environment.OSVersion.Version.Minor.ToString()}";
-
-            // 检查系统版本并复制对应驱动
-            try
-            {
-                switch (version)
+                var result = NFAPI.nf_registerDriver("netfilter2");
+                if (result != NF_STATUS.NF_STATUS_SUCCESS)
                 {
-                    case "10.0":
-                        File.Copy("bin\\Win-10.sys", driverPath);
-                        Utils.Logging.Info("已复制 Win10 驱动");
-                        break;
-                    case "6.3":
-                    case "6.2":
-                        File.Copy("bin\\Win-8.sys", driverPath);
-                        Utils.Logging.Info("已复制 Win8 驱动");
-                        break;
-                    case "6.1":
-                    case "6.0":
-                        File.Copy("bin\\Win-7.sys", driverPath);
-                        Utils.Logging.Info("已复制 Win7 驱动");
-                        break;
-                    default:
-                        Utils.Logging.Info($"不支持的系统版本：{version}");
-                        return false;
+                    Logging.Error($"注册驱动失败，返回值：{result}");
+                    return false;
                 }
+
+                Logging.Info("注册驱动成功");
             }
-            catch (Exception e)
-            {
-                Utils.Logging.Info("复制驱动文件失败");
-                Utils.Logging.Info(e.ToString());
-                return false;
-            }
-            MainForm.Instance.StatusText($"{Utils.i18N.Translate("Status")}{Utils.i18N.Translate(": ")}{Utils.i18N.Translate("Register driver")}");
-            // 注册驱动文件
-            var result = nfapinet.NFAPI.nf_registerDriver("netfilter2");
-            if (result != nfapinet.NF_STATUS.NF_STATUS_SUCCESS)
-            {
-                Utils.Logging.Info($"注册驱动失败，返回值：{result}");
-                return false;
-            }
+
             return true;
         }
 
+        private bool CheckDriverReady()
+        {
+            // 检查驱动是否存在
+            if (!File.Exists(_driverPath)) return false;
+
+            // 检查驱动版本号
+            var binVersion = FileVersionInfo.GetVersionInfo(_binDriverPath).FileVersion;
+            return _systemDriverVersion.Equals(binVersion);
+        }
+
+        public bool UninstallDriver()
+        {
+            try
+            {
+                var service = new ServiceController("netfilter2");
+                if (service.Status == ServiceControllerStatus.Running)
+                {
+                    service.Stop();
+                    service.WaitForStatus(ServiceControllerStatus.Stopped);
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            if (!File.Exists(_driverPath)) return true;
+            try
+            {
+                NFAPI.nf_unRegisterDriver("netfilter2");
+
+                File.Delete(_driverPath);
+                _systemDriverVersion = "";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool InstallDriver()
+        {
+            if (!Ready) return false;
+            Logging.Info("安装驱动中");
+            try
+            {
+                File.Copy(_binDriverPath, _driverPath);
+            }
+            catch (Exception e)
+            {
+                Logging.Error("驱动复制失败\n" + e);
+                return false;
+            }
+
+            MainForm.Instance.StatusText(i18N.Translate("Register driver"));
+            // 注册驱动文件
+            var result = NFAPI.nf_registerDriver("netfilter2");
+            if (result == NF_STATUS.NF_STATUS_SUCCESS)
+            {
+                _systemDriverVersion = FileVersionInfo.GetVersionInfo(_driverPath).FileVersion;
+                Logging.Info($"驱动安装成功，当前驱动版本:{_systemDriverVersion}");
+            }
+            else
+            {
+                Logging.Error($"注册驱动失败，返回值：{result}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (!WriteLog(e)) return;
+            if (State == State.Starting)
+            {
+                if (Instance.HasExited)
+                    State = State.Stopped;
+                else if (e.Data.Contains("Started"))
+                    State = State.Started;
+                else if (e.Data.Contains("Failed") || e.Data.Contains("Unable")) State = State.Stopped;
+            }
+            else if (State == State.Started)
+            {
+                if (e.Data.StartsWith("[APP][Bandwidth]"))
+                {
+                    var splited = e.Data.Replace("[APP][Bandwidth]", "").Trim().Split(',');
+                    if (splited.Length == 2)
+                    {
+                        var uploadSplited = splited[0].Split(':');
+                        var downloadSplited = splited[1].Split(':');
+
+                        if (uploadSplited.Length == 2 && downloadSplited.Length == 2)
+                            if (long.TryParse(uploadSplited[1], out var upload) && long.TryParse(downloadSplited[1], out var download))
+                                Task.Run(() => OnBandwidthUpdated(upload, download));
+                    }
+                }
+            }
+        }
+
+        public override void Stop()
+        {
+            StopInstance();
+            try
+            {
+                if (UDPServerInstance == null || UDPServerInstance.HasExited) return;
+                UDPServerInstance.Kill();
+                UDPServerInstance.WaitForExit();
+            }
+            catch (Exception e)
+            {
+                Logging.Error($"停止 {MainFile}.exe 错误：\n" + e);
+            }
+        }
         private string StartUDPServer(string fallback)
         {
             if (Global.Settings.UDPServer)
@@ -423,17 +418,15 @@ namespace Netch.Controllers
                     if (UDPServer.Type != "Socks5")
                     {
                         //启动UDP分流服务支持SS/SSR/Trojan
-                        UDPServerInstance = MainController.GetProcess();
                         if (UDPServer.Type == "SS")
                         {
-                            UDPServerInstance.StartInfo.FileName = "bin\\Shadowsocks.exe";
+                            UDPServerInstance = GetProcess("bin\\Shadowsocks.exe");
                             UDPServerInstance.StartInfo.Arguments = $"-s {UDPServerHostName} -p {UDPServer.Port} -b {Global.Settings.LocalAddress} -l {Global.Settings.Socks5LocalPort + 1} -m {UDPServer.EncryptMethod} -k \"{UDPServer.Password}\" -u";
                         }
 
                         if (UDPServer.Type == "SSR")
                         {
-                            UDPServerInstance.StartInfo.FileName = "bin\\ShadowsocksR.exe";
-
+                            UDPServerInstance = GetProcess("bin\\ShadowsocksR.exe");
                             UDPServerInstance.StartInfo.Arguments = $"-s {UDPServerHostName} -p {UDPServer.Port} -k \"{UDPServer.Password}\" -m {UDPServer.EncryptMethod} -t 120";
 
                             if (!string.IsNullOrEmpty(UDPServer.Protocol))
@@ -475,8 +468,7 @@ namespace Netch.Controllers
                                     }
                             }));
 
-                            UDPServerInstance = MainController.GetProcess();
-                            UDPServerInstance.StartInfo.FileName = "bin\\Trojan.exe";
+                            UDPServerInstance = GetProcess("bin\\Trojan.exe");
                             UDPServerInstance.StartInfo.Arguments = "-c ..\\data\\UDPServerlast.json";
 
                         }

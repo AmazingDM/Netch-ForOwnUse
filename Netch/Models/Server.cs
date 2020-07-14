@@ -19,7 +19,7 @@ namespace Netch.Models
         public string Group = "None";
 
         /// <summary>
-        ///     代理类型（HTTP、HTTPS、Socks5、SS、SSR、VMess、TR、FakeServer）
+        ///     代理类型（HTTP、HTTPS、Socks5、SS、SSR、VMess）
         /// </summary>
         public string Type;
 
@@ -156,32 +156,7 @@ namespace Netch.Models
 
             if (Country == null)
             {
-                try
-                {
-                    var databaseReader = new DatabaseReader("bin\\GeoLite2-Country.mmdb");
-
-                    if (IPAddress.TryParse(Hostname, out _) == true)
-                    {
-                        Country = databaseReader.Country(Hostname).Country.IsoCode;
-                    }
-                    else
-                    {
-                        var DnsResult = DNS.Lookup(Hostname);
-
-                        if (DnsResult != null)
-                        {
-                            Country = databaseReader.Country(DnsResult).Country.IsoCode;
-                        }
-                        else
-                        {
-                            Country = "UN";
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    Country = "UN";
-                }
+                Country = Utils.Utils.GetCityCode(Hostname);
             }
 
             Group = Group.Equals("None") || Group.Equals("") ? "NONE" : Group;
@@ -198,8 +173,6 @@ namespace Netch.Models
                     return $"[V2][{Country}][{Group}] {Remark}";
                 case "Trojan":
                     return $"[TR][{Country}][{Group}] {Remark}";
-                case "FakeServer":
-                    return $"TCP同款节点";
                 default:
                     return "WTF";
             }

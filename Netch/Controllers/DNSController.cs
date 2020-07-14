@@ -1,83 +1,55 @@
-﻿using Netch.Forms;
-using Netch.Utils;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
+using Netch.Utils;
 
 namespace Netch.Controllers
 {
-    public class DNSController
+    public class DNSController : Controller
     {
-        /// <summary>
-        ///		进程实例
-        /// </summary>
-        public Process Instance;
+        public DNSController()
+        {
+            AkaName = "dns Service";
+            MainFile = "unbound";
+            ExtFiles = new[] {"unbound-service.conf", "forward-zone.conf"};
+            InitCheck();
+        }
 
         /// <summary>
-        /// 启动DNS服务
+        ///     启动DNS服务
         /// </summary>
         /// <returns></returns>
         public bool Start()
         {
-            MainForm.Instance.StatusText($"{Utils.i18N.Translate("Starting dns Service")}");
+            if (!Ready) return false;
+
+            Instance = GetProcess("bin\\unbound.exe");
+            Instance.StartInfo.Arguments = "-c unbound-service.conf -v";
+
+            Instance.OutputDataReceived += OnOutputDataReceived;
+            Instance.ErrorDataReceived += OnOutputDataReceived;
+
             try
             {
-                if (!File.Exists("bin\\unbound.exe") && !File.Exists("bin\\unbound-service.conf") && !File.Exists("bin\\forward-zone.conf"))
-                {
-                    return false;
-                }
-
-                Instance = MainController.GetProcess();
-                Instance.StartInfo.FileName = "bin\\unbound.exe";
-
-                Instance.StartInfo.Arguments = "-c unbound-service.conf -v";
-
-                Instance.OutputDataReceived += OnOutputDataReceived;
-                Instance.ErrorDataReceived += OnOutputDataReceived;
-
                 Instance.Start();
                 Instance.BeginOutputReadLine();
                 Instance.BeginErrorReadLine();
-                Logging.Info("dns-unbound 启动完毕");
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Utils.Logging.Info("dns-unbound 进程出错");
-                Stop();
+                Logging.Error("dns-unbound 进程出错：\n" + e);
                 return false;
             }
         }
 
-        /// <summary>
-        ///		停止
-        /// </summary>
-        public void Stop()
+        private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            try
-            {
-                if (Instance != null && !Instance.HasExited)
-                {
-                    Instance.Kill();
-                    Instance.WaitForExit();
-                }
-            }
-            catch (Exception e)
-            {
-                Utils.Logging.Info(e.ToString());
-            }
+            WriteLog(e);
         }
 
-        public void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+        public override void Stop()
         {
-            if (!string.IsNullOrWhiteSpace(e.Data))
-            {
-                if (File.Exists("logging\\dns-unbound.log"))
-                {
-                    File.Delete("logging\\dns-unbound.log");
-                }
-                File.AppendAllText("logging\\dns-unbound.log", $"{e.Data}\r\n");
-            }
+            StopInstance();
         }
     }
 }

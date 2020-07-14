@@ -1,28 +1,27 @@
-﻿using Microsoft.Diagnostics.Tracing.Parsers;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Session;
 using Netch.Controllers;
 using Netch.Forms;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using Netch.Models;
 
 namespace Netch.Utils
 {
     public static class Bandwidth
     {
-        public static int received = 0;
+        public static int received;
 
         /// <summary>
-		///     计算流量
-		/// </summary>
-		/// <param name="bandwidth">流量</param>
-		/// <returns>带单位的流量字符串</returns>
-		public static string Compute(long bandwidth)
+        ///     计算流量
+        /// </summary>
+        /// <param name="bandwidth">流量</param>
+        /// <returns>带单位的流量字符串</returns>
+        public static string Compute(long bandwidth)
         {
-            string[] units = { "KB", "MB", "GB", "TB", "PB" };
+            string[] units = {"KB", "MB", "GB", "TB", "PB"};
             double result = bandwidth;
             var i = -1;
 
@@ -36,53 +35,39 @@ namespace Netch.Utils
                 result = 0;
             }
 
-            return string.Format("{0} {1}", System.Math.Round(result, 2), units[i]);
+            return string.Format("{0} {1}", Math.Round(result, 2), units[i]);
         }
 
         /// <summary>
         /// 根据程序名统计流量
         /// </summary>
         /// <param name="ProcessName"></param>
-        public static void NetTraffic(Models.Server server, Models.Mode mode, MainController mainController)
+        public static void NetTraffic(Server server, Mode mode, MainController mainController)
         {
             var counterLock = new object();
             //int sent = 0;
 
             //var processList = Process.GetProcessesByName(ProcessName).Select(p => p.Id).ToHashSet();
-            List<int> processList = new List<int>();
+            var processList = new List<int>();
 
-            if (server.Type.Equals("Socks5") && mainController.pHTTPController != null)
+            if (server.Type.Equals("Socks5") && mainController.pModeController.AkaName == "HTTP")
             {
-                processList.Add(mainController.pHTTPController.pPrivoxyController.Instance.Id);
+                processList.Add(((HTTPController) mainController.pModeController).pPrivoxyController.Instance.Id);
             }
             else if (server.Type.Equals("SS") && Global.Settings.BootShadowsocksFromDLL)
             {
                 processList.Add(Process.GetCurrentProcess().Id);
             }
-            else if (server.Type.Equals("SS") && mainController.pSSController != null)
+            else if (mainController.pEncryptedProxyController != null)
             {
-                processList.Add(mainController.pSSController.Instance.Id);
+                // mainController.pServerClientController.Instance
+                processList.Add(mainController.pEncryptedProxyController.Instance.Id);
             }
-            else if (server.Type.Equals("SSR") && mainController.pSSRController != null)
+            else if (mainController.pModeController != null)
             {
-                processList.Add(mainController.pSSRController.Instance.Id);
+                processList.Add(mainController.pModeController.Instance.Id);
             }
-            else if (server.Type.Equals("VMess") && mainController.pVMessController != null)
-            {
-                processList.Add(mainController.pVMessController.Instance.Id);
-            }
-            else if (server.Type.Equals("TR") && mainController.pTrojanController != null)
-            {
-                processList.Add(mainController.pTrojanController.Instance.Id);
-            }
-            else if (mainController.pTUNTAPController != null)
-            {
-                processList.Add(mainController.pTUNTAPController.Instance.Id);
-            }
-            else if (mainController.pNFController != null)
-            {
-                processList.Add(mainController.pNFController.Instance.Id);
-            }
+
             Logging.Info("启动流量统计 PID：" + string.Join(",", processList.ToArray()));
 
             Task.Run(() =>
@@ -121,7 +106,8 @@ namespace Netch.Utils
                 MainForm.Instance.OnBandwidthUpdated(0);
                 received = 0;
             }
-            while (MainForm.Instance.State != Models.State.Stopped)
+
+            while (MainForm.Instance.State != State.Stopped)
             {
                 Task.Delay(1000).Wait();
                 lock (counterLock)
@@ -129,7 +115,6 @@ namespace Netch.Utils
                     MainForm.Instance.OnBandwidthUpdated(Convert.ToInt64(received));
                 }
             }
-
         }
     }
 }

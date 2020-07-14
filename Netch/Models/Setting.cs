@@ -162,12 +162,12 @@ namespace Netch.Models
         /// <summary>
         ///     是否启用启动后延迟测试
         /// </summary>
-        public bool StartedTcping = true;
+        public bool StartedTcping = false;
 
         /// <summary>
         ///     启动后延迟测试间隔/秒
         /// </summary>
-        public int StartedTcping_Interval = 1;
+        public int StartedTcping_Interval = 3;
 
         /// <summary>
         ///     ACL规则
@@ -178,6 +178,11 @@ namespace Netch.Models
         ///     是否使用DLL启动Shadowsocks
         /// </summary>
         public bool BootShadowsocksFromDLL = false;
+
+        /// <summary>
+        ///     语言设置
+        /// </summary>
+        public string Language = "System";
 
         /// <summary>
         ///     进程白名单模式
@@ -193,11 +198,6 @@ namespace Netch.Models
         ///     UDPServerIndex
         /// </summary>
         public int UDPServerIndex = 0;
-
-        /// <summary>
-        ///     语言设置
-        /// </summary>
-        public string Language = "System";
 
         /// <summary>
         ///     进程模式不代理UDP
