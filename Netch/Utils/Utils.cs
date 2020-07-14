@@ -87,19 +87,19 @@ namespace Netch.Utils
 
                     if (DnsResult != null)
                     {
-                        Country = databaseReader.Country(DnsResult).Country.IsoCode;
+                        Country = databaseReader.Country(Hostname).Country.IsoCode;
                     }
                     else
                     {
-                        Country = "UN";
+                        Country = "Unknown";
                     }
                 }
             }
             catch (Exception)
             {
-                Country = "UN";
+                Country = "Unknown";
             }
-            return Country;
+            return Country == null ? "Unknown" : Country;
         }
     }
 }
