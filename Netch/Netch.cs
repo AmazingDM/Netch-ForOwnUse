@@ -59,14 +59,14 @@ namespace Netch
                 Logging.Info($"当前语言：{Global.Settings.Language}");
 
                 // 检查是否已经运行
-                if (!mutex.WaitOne(0, false))
+                /*if (!mutex.WaitOne(0, false))
                 {
                     // 弹出提示
                     MessageBoxX.Show(i18N.Translate("Netch is already running"));
 
                     // 退出进程
                     Environment.Exit(1);
-                }
+                }*/
 
                 var OS = Environment.Is64BitOperatingSystem ? "x64" : "x86";
                 var PROC = Environment.Is64BitProcess ? "x64" : "x86";
