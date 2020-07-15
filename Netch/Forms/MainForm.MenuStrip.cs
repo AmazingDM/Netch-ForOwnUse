@@ -165,8 +165,8 @@ namespace Netch.Forms
                             }
                             catch (Exception)
                             {
-                                    // ignored
-                                }
+                                // ignored
+                            }
 
                             Global.Settings.Server = Global.Settings.Server.Where(server => server.Group != item.Remark).ToList();
                             var result = ShareLink.Parse(response);
@@ -274,7 +274,7 @@ namespace Netch.Forms
             {
                 try
                 {
-                    if (new NFController().UninstallDriver())
+                    if (NFController.UninstallDriver())
                     {
                         MessageBoxX.Show(i18N.Translate("Service has been uninstalled"), owner: this);
                     }
@@ -286,6 +286,7 @@ namespace Netch.Forms
                     throw;
                 }
 
+                StatusText(i18N.Translate(StateExtension.GetStatusString(State.Waiting)));
                 Enabled = true;
             });
         }

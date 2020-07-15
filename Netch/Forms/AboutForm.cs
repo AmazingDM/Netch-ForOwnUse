@@ -16,7 +16,6 @@ namespace Netch.Forms
         {
             Text = i18N.Translate(Text);
             ChannelLabel.Text = i18N.Translate(ChannelLabel.Text);
-            SponsorGroupBox.Text = i18N.Translate(SponsorGroupBox.Text);
         }
 
         private void AboutForm_FormClosing(object sender, FormClosingEventArgs e)
