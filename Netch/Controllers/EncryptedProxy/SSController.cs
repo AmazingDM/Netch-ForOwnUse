@@ -55,10 +55,6 @@ namespace Netch.Controllers
             {
                 Instance.StartInfo.Arguments += " --acl default.acl";
             }
-            else
-            {
-                Instance.StartInfo.Arguments += " --acl proxy_all.acl";
-            }
             Instance.OutputDataReceived += OnOutputDataReceived;
             Instance.ErrorDataReceived += OnOutputDataReceived;
 

@@ -42,7 +42,7 @@ namespace Netch.Models
         ///    false 仅代理规则内IP
         /// </summary>
         public bool ProcesssIPFillter() {
-            if (Remark.Contains("(IPFillter = false)"))
+            if (Remark.Contains("IPFillter=false"))
                 return false;
             return true;
         }

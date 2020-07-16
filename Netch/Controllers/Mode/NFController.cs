@@ -23,6 +23,30 @@ namespace Netch.Controllers
         {
             return File.Exists(file) ? FileVersionInfo.GetVersionInfo(file).FileVersion : "";
         }
+        static NFController()
+        {
+            // 生成系统版本
+            var winNTver = $"{Environment.OSVersion.Version.Major.ToString()}.{Environment.OSVersion.Version.Minor.ToString()}";
+            switch (winNTver)
+            {
+                case "10.0":
+                    BinDriver = "Win-10.sys";
+                    break;
+                case "6.3":
+                case "6.2":
+                    BinDriver = "Win-8.sys";
+                    break;
+                case "6.1":
+                case "6.0":
+                    BinDriver = "Win-7.sys";
+                    break;
+                default:
+                    Logging.Error($"不支持的系统版本：{winNTver}");
+                    return;
+            }
+
+            BinDriver = "bin\\" + BinDriver;
+        }
 
         public NFController()
         {
@@ -95,6 +119,9 @@ namespace Netch.Controllers
 
             return false;
         }*/
+
+
+        private static string[] _sysDns = { };
         public override bool Start(Server server, Mode mode)
         {
             if (!CheckDriverReady())
@@ -197,14 +224,21 @@ namespace Netch.Controllers
 
             // true  除规则内IP全走代理
             // false 仅代理规则内IP
-            if (mode.ProcesssIPFillter() && processesIPFillter.Length > 0)
+            if (processesIPFillter.Length > 0)
             {
-                fallback += $" -bypassip true";
+                if (mode.ProcesssIPFillter())
+                {
+                    fallback += $" -bypassip true";
+                }
+                else
+                {
+                    fallback += $" -bypassip false";
+                }
                 fallback += $" -fip \"{processesIPFillter}\"";
             }
             else
             {
-                fallback += $" -bypassip false";
+                fallback += $" -bypassip true";
             }
 
             //进程模式代理IP日志打印
@@ -249,7 +283,14 @@ namespace Netch.Controllers
 
                         if (sr.ReadToEnd().Contains("Redirect TCP to"))
                         {
+
                             State = Models.State.Started;
+
+                            //备份并替换系统DNS
+                            _sysDns = DNS.getSystemDns();
+                            string[] dns = { "1.1.1.1", "8.8.8.8" };
+                            DNS.SetDNS(dns);
+
                             return true;
                         }
                     }
@@ -404,6 +445,8 @@ namespace Netch.Controllers
         public override void Stop()
         {
             StopInstance();
+            //恢复系统DNS
+            DNS.SetDNS(_sysDns);
             try
             {
                 if (UDPServerInstance == null || UDPServerInstance.HasExited) return;

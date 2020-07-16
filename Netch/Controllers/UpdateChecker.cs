@@ -19,7 +19,7 @@ namespace Netch.Controllers
 
         public const string Name = @"Netch";
         public const string Copyright = @"Copyright © 2019 - 2020";
-        public const string Version = @"1.5.7";
+        public const string Version = @"1.5.6";
 
         public string LatestVersionNumber;
         public string LatestVersionUrl;
