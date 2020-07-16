@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -52,7 +53,7 @@ namespace Netch.Utils
         /// </summary>
         /// <param name="dns"></param>
         public static void SetDNS(string[] dns)
-        {
+        { 
             ManagementClass wmi = new ManagementClass("Win32_NetworkAdapterConfiguration");
             ManagementObjectCollection moc = wmi.GetInstances();
             ManagementBaseObject inPar = null;
@@ -60,14 +61,14 @@ namespace Netch.Utils
             foreach (ManagementObject mo in moc)
             {
                 //如果没有启用IP设置的网络设备则跳过
-                if (!(bool)mo["IPEnabled"])
+                if (!(bool) mo["IPEnabled"])
                     continue;
 
                 //设置DNS地址
                 if (dns != null)
                 {
                     inPar = mo.GetMethodParameters("SetDNSServerSearchOrder");
-                    inPar["DNSServerSearchOrder"] = dns;
+                inPar["DNSServerSearchOrder"] = dns;
                     outPar = mo.InvokeMethod("SetDNSServerSearchOrder", inPar, null);
                 }
             }
@@ -77,30 +78,16 @@ namespace Netch.Utils
         /// </summary>
         public static string[] getSystemDns()
         {
-            string[] dns = { };
-            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (NetworkInterface adapter in nics)
-            {
-                bool Pd1 = (adapter.NetworkInterfaceType == NetworkInterfaceType.Ethernet); //判断是否是以太网连接
-                if (Pd1)
+            var systemDns = new[] {"223.5.5.5", "1.1.1.1"};
+            foreach (var network in NetworkInterface.GetAllNetworkInterfaces())
+                if (!network.Description.Contains("Virtual") &&
+                    network.OperationalStatus == OperationalStatus.Up &&
+                    network.GetIPProperties()?.GatewayAddresses.Count != 0)
                 {
-                    IPInterfaceProperties ip = adapter.GetIPProperties();     //IP配置信
-                    int DnsCount = ip.DnsAddresses.Count;
-                    Console.WriteLine("DNS服务器地址：");
-                    if (DnsCount > 0)
-                    {
-                        try
-                        {
-                            return new string[] { ip.DnsAddresses[0].ToString(), ip.DnsAddresses[1].ToString() };
-                        }
-                        catch (Exception er)
-                        {
-                            throw er;
-                        }
-                    }
+                    systemDns = network.GetIPProperties().DnsAddresses.Select(dns => dns.ToString()).ToArray();
                 }
-            }
-            return new string[] { "223.5.5.5", "1.1.1.1" };
+
+            return systemDns;
         }
     }
 }

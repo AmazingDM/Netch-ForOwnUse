@@ -284,7 +284,7 @@ namespace Netch.Controllers
                         if (sr.ReadToEnd().Contains("Redirect TCP to"))
                         {
 
-                            State = Models.State.Started;
+                            State = State.Started;
 
                             //备份并替换系统DNS
                             _sysDns = DNS.getSystemDns();
@@ -297,7 +297,8 @@ namespace Netch.Controllers
                 }
                 catch (Exception e)
                 {
-                    Logging.Info(e.Message);
+                    Logging.Error(e.Message);
+                    return true;
                 }
                 finally
                 {
