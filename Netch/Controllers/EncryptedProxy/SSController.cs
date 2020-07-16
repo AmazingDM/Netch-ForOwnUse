@@ -51,7 +51,14 @@ namespace Netch.Controllers
             Instance.StartInfo.Arguments = $"-s {server.Hostname} -p {server.Port} -b {Global.Settings.LocalAddress} -l {Global.Settings.Socks5LocalPort} -m {server.EncryptMethod} -k \"{server.Password}\" -u";
             if (!string.IsNullOrWhiteSpace(server.Plugin) && !string.IsNullOrWhiteSpace(server.PluginOption))
                 Instance.StartInfo.Arguments += $" --plugin {server.Plugin} --plugin-opts \"{server.PluginOption}\"";
-            if (mode.BypassChina) Instance.StartInfo.Arguments += " --acl default.acl";
+            if (mode.BypassChina)
+            {
+                Instance.StartInfo.Arguments += " --acl default.acl";
+            }
+            else
+            {
+                Instance.StartInfo.Arguments += " --acl proxy_all.acl";
+            }
             Instance.OutputDataReceived += OnOutputDataReceived;
             Instance.ErrorDataReceived += OnOutputDataReceived;
 
