@@ -104,12 +104,10 @@ namespace Netch.Models
 
         /// <summary>
         ///    进程模式IP过滤器
-        ///    true 除规则内IP全走代理 默认
-        ///    false 仅代理规则内IP
+        ///    true  规则内IP走直连
+        ///    false 规则内IP走代理
         /// </summary>
         public bool ProcesssIPFillter => Remark.Contains("IPFillter=true");
-
-        public bool A { get; set; }
 
         /// <summary>
         ///		获取备注

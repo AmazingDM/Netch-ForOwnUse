@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading.Tasks;
@@ -86,11 +88,8 @@ namespace Netch.Controllers
                 return false;
             }
 
-            /*aio_dial((int)NameList.TYPE_REDIRCTOR_DNS, "8.8.8.8");
-            aio_dial((int)NameList.TYPE_FILTERIP, "true");
-            aio_dial((int)NameList.TYPE_CLRFIP, "");*/
-
             SetName(mode);
+            SetFip(mode);
 
             #endregion
 
@@ -288,6 +287,27 @@ namespace Netch.Controllers
             }
 
             aio_dial((int)NameList.TYPE_ADDNAME, @"NTT.exe");
+        }
+
+        private void SetFip(Mode mode)
+        {
+            aio_dial((int)NameList.TYPE_CLRFIP, "");
+            if (mode.ProcesssIPFillter)
+            {
+                aio_dial((int)NameList.TYPE_FILTERIP, "true");
+            }
+            else
+            {
+                aio_dial((int)NameList.TYPE_FILTERIP, "false");
+
+                if (Global.Settings.STUN_Server == "stun.stunprotocol.org")
+                    aio_dial((int)NameList.TYPE_ADDFIP, Dns.GetHostAddresses(Global.Settings.STUN_Server)[0].ToString());
+            }
+
+            foreach (var rule in mode.FullRule)
+            {
+                aio_dial((int)NameList.TYPE_ADDFIP, rule);
+            }
         }
 
         #region NativeMethods
