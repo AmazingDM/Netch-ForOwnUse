@@ -18,13 +18,13 @@
 
 ## 相比原版 Netch 新增特性
 
--   进程模式IP过滤器
+-   进程模式TCP IP过滤器
 -   进程模式已代理IP(TCP&UDP)日志打印
--   TCP UDP 分流（支持 Socks、SS、SSR、Trojan）
+-   TCP UDP 分流
 -   允许多开 Netch（进程模式因驱动限制无法多开）
 -   ~~流量统计（已合并主仓库）~~
 -   [~~进程白名单模式（全局）~~](https://netch.org/#/docs/zh-CN/mode?id=%e8%bf%9b%e7%a8%8b%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f)
--   ~~进程模式可设置不代理 UDP~~
+-   ~~进程模式不代理UDP~~
 
 ## 进程白名单模式
 
