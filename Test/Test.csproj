@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
+</PropertyGroup>
+
+<ItemGroup>
+    <None Remove=".gitignore" />
+</ItemGroup>
+
+<ItemGroup>
+    <ProjectReference Include="..\Netch\Netch.csproj" />
+</ItemGroup>
+
+<ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+</ItemGroup>
+
+<ItemGroup>
+  <PackageReference Include="NUnit" Version="3.12.0" />
+</ItemGroup>
+
+</Project>
+
