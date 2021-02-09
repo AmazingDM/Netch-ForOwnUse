@@ -107,7 +107,7 @@ namespace Netch.Models
         ///    true  规则内IP走直连
         ///    false 规则内IP走代理
         /// </summary>
-        public bool ProcesssIPFillter => Remark.Contains("IPFillter=true");
+        public bool ProcesssIPFillter => Remark.Contains("IPFillter") ? Remark.Contains("IPFillter=true") : true;
 
         /// <summary>
         ///		获取备注

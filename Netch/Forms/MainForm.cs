@@ -599,7 +599,8 @@ namespace Netch.Forms
 
             State = State.Started;
 
-            _ = Task.Run(Bandwidth.NetTraffic);
+            if (!Global.Settings.UDPServer)
+                _ = Task.Run(Bandwidth.NetTraffic);
             _ = Task.Run(NatTest);
 
             if (Global.Settings.MinimizeWhenStarted)
