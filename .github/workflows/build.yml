@@ -1,10 +1,5 @@
 name: Netch CI
-
-on:
-  push:
-    tags:
-      - '1.*.*'
-
+on: [push, pull_request]
 jobs:
   build:
     name: Build
@@ -48,7 +43,7 @@ jobs:
       with:
         name: ${{ env.GITHUB_TAG_NAME }}
         prerelease: true
-        draft: true
+        draft: false
         files: |
           C:\builtfiles\Netch.7z
         body: |
