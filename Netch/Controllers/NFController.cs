@@ -63,31 +63,21 @@ namespace Netch.Controllers
 
             if (Global.Settings.ProcessNoProxyForUdp && Global.Settings.ProcessNoProxyForTcp) MessageBoxX.Show("？");
 
+            aio_dial((int)NameList.TYPE_FILTERLOOPBACK, "false");
 
+            //输出已代理IP到日志文件
             if (Global.Settings.ProcessProxyIPLog)
                 aio_dial((int)NameList.TYPE_PRINTFILTERIP, "true");
 
-            aio_dial((int)NameList.TYPE_FILTERLOOPBACK, "false");
-
             //UDP
             if (Global.Settings.ProcessNoProxyForUdp)
-            {
                 aio_dial((int)NameList.TYPE_FILTERUDP, "false");
-            }
-            else
-            {
-                aio_dial((int)NameList.TYPE_FILTERUDP, "true");
-            }
+
             //TCP
             if (Global.Settings.ProcessNoProxyForTcp)
-            {
                 aio_dial((int)NameList.TYPE_FILTERTCP, "false");
-            }
-            else
-            {
-                aio_dial((int)NameList.TYPE_FILTERTCP, "true");
-            }
 
+            //设置TCP & UDP 代理服务器
             SetServer();
 
             if (!CheckRule(mode.FullRule, out var list))

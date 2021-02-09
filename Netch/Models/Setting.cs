@@ -298,7 +298,7 @@ namespace Netch.Models
         public int UDPServerIndex = -1;
 
         /// <summary>
-        ///     进程模式打印已代理IP日志 5s/次 在redirector.log中循环打印
+        ///     进程模式打印已代理IP日志 5s/次 ProcessProxyIP.log中循环打印
         /// </summary>
         public bool ProcessProxyIPLog = false;
     }
