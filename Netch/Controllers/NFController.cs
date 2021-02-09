@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Netch.Forms;
 using Netch.Models;
@@ -50,6 +52,8 @@ namespace Netch.Controllers
 
         public string Name { get; } = "Redirector";
 
+        private bool printFlag = true;
+
         public bool Start(in Mode mode)
         {
             if (!CheckDriver())
@@ -58,6 +62,10 @@ namespace Netch.Controllers
             #region aio_dial
 
             if (Global.Settings.ProcessNoProxyForUdp && Global.Settings.ProcessNoProxyForTcp) MessageBoxX.Show("？");
+
+
+            if (Global.Settings.ProcessProxyIPLog)
+                aio_dial((int)NameList.TYPE_PRINTFILTERIP, "true");
 
             aio_dial((int)NameList.TYPE_FILTERLOOPBACK, "false");
 
@@ -101,20 +109,62 @@ namespace Netch.Controllers
                     Global.Settings.ModifiedDNS = "1.1.1.1,8.8.8.8";
                 DNS.OutboundDNS = Global.Settings.ModifiedDNS;
             }
+            bool flag = aio_init();
 
-            return aio_init();
+            if (Global.Settings.ProcessProxyIPLog)
+            {
+                printFlag = true;
+                new Thread(() =>
+                {
+                    while (printFlag)
+                    {
+                        Thread.Sleep(5000);
+
+                        var buffer = new byte[char.MaxValue];
+                        aio_getPIP(buffer);
+                        string retStr = Encoding.ASCII.GetString(buffer);
+                        retStr = retStr.Substring(0, retStr.IndexOf("\0"));
+                        saveProcessProxyIPLog(retStr);
+                    }
+                }).Start();
+            }
+
+            return flag;
+        }
+
+        /// <summary>
+        ///     写入代理IP日志     
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveProcessProxyIPLog(string log)
+        {
+            try
+            {
+                string ProcessProxyIPLog_logPath = Path.Combine(Global.NetchDir, "logging\\ProcessProxyIP.log");
+
+                if (File.Exists(ProcessProxyIPLog_logPath))
+                    File.Delete(ProcessProxyIPLog_logPath);
+
+                File.AppendAllText(ProcessProxyIPLog_logPath, log);
+            }
+            catch (Exception exception)
+            {
+                Logging.Warning("写入 代理IP 日志错误：\n" + exception.Message);
+            }
         }
 
         public void Stop()
         {
             Task.Run(() =>
             {
-                MainController.UdpServerController.Stop();
+                MainController.UdpServerController?.Stop();
+                MainController.UdpServerController = null;
                 if (Global.Settings.ModifySystemDNS)
                     //恢复系统DNS
                     DNS.OutboundDNS = _sysDns;
             });
-
+            printFlag = false;
             aio_free();
         }
 
@@ -327,6 +377,9 @@ namespace Netch.Controllers
         [DllImport("Redirector.bin", CallingConvention = CallingConvention.Cdecl)]
         private static extern ulong aio_getDL();
 
+        [DllImport("Redirector.bin", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void aio_getPIP([Out] byte[] buf);
+
 
         public enum NameList
         {
@@ -334,6 +387,8 @@ namespace Netch.Controllers
             TYPE_FILTERTCP,
             TYPE_FILTERUDP,
             TYPE_FILTERIP,
+
+            TYPE_PRINTFILTERIP,
 
             TYPE_TCPLISN,
             TYPE_TCPTYPE,

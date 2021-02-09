@@ -136,8 +136,9 @@ namespace Netch.Utils
                     };
                     tSession.Source.Process();
                 }
-                catch (System.Exception)
+                catch (System.Exception e)
                 {
+                    Logging.Error("流量统计进程异常:" + e.Message);
                 }
             });
 
