@@ -4,10 +4,8 @@
 [![Version](https://img.shields.io/github/v/release/AmazingDM/Netch-ForOwnUse)](https://github.com/AmazingDM/Netch-ForOwnUse/releases)
 [![Downloads](https://img.shields.io/github/downloads/AmazingDM/Netch-ForOwnUse/total.svg)](https://github.com/AmazingDM/Netch-ForOwnUse/releases)
 [![Netch CI](https://github.com/AmazingDM/Netch-ForOwnUse/workflows/Netch%20CI/badge.svg)](https://github.com/AmazingDM/Netch-ForOwnUse/actions)
-[![Pre Build CI](https://github.com/AmazingDM/Netch-ForOwnUse/workflows/Pre%20Build%20CI/badge.svg)](https://github.com/AmazingDM/Netch-ForOwnUse/actions)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![](https://img.shields.io/badge/Telegram-频道-blue)](https://t.me/Netch) [![](https://img.shields.io/badge/Telegram-讨论组-green)](https://t.me/Netch_Discuss_Group)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fnetch.org)](https://netch.org/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
 游戏加速工具
