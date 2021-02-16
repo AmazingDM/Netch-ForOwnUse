@@ -61,6 +61,7 @@ namespace Netch.Forms
             this.LanguageLabel = new System.Windows.Forms.Label();
             this.LanguageComboBox = new System.Windows.Forms.ComboBox();
             this.NFTabPage = new System.Windows.Forms.TabPage();
+            this.ICMPForwardCheckBox = new System.Windows.Forms.CheckBox();
             this.NoProxyForTcpCheckBox = new System.Windows.Forms.CheckBox();
             this.NoProxyForUdpCheckBox = new System.Windows.Forms.CheckBox();
             this.ModifySystemDNSCheckBox = new System.Windows.Forms.CheckBox();
@@ -411,6 +412,7 @@ namespace Netch.Forms
             // NFTabPage
             // 
             this.NFTabPage.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.NFTabPage.Controls.Add(this.ICMPForwardCheckBox);
             this.NFTabPage.Controls.Add(this.NoProxyForTcpCheckBox);
             this.NFTabPage.Controls.Add(this.NoProxyForUdpCheckBox);
             this.NFTabPage.Controls.Add(this.ModifySystemDNSCheckBox);
@@ -426,6 +428,16 @@ namespace Netch.Forms
             this.NFTabPage.Size = new System.Drawing.Size(461, 325);
             this.NFTabPage.TabIndex = 1;
             this.NFTabPage.Text = "Process Mode";
+            // 
+            // ICMPForwardCheckBox
+            // 
+            this.ICMPForwardCheckBox.AutoSize = true;
+            this.ICMPForwardCheckBox.Location = new System.Drawing.Point(8, 150);
+            this.ICMPForwardCheckBox.Name = "ICMPForwardCheckBox";
+            this.ICMPForwardCheckBox.Size = new System.Drawing.Size(186, 16);
+            this.ICMPForwardCheckBox.TabIndex = 29;
+            this.ICMPForwardCheckBox.Text = "ICMP转发（默认转发1.2.4.8）";
+            this.ICMPForwardCheckBox.UseVisualStyleBackColor = true;
             // 
             // NoProxyForTcpCheckBox
             // 
@@ -1164,5 +1176,6 @@ namespace Netch.Forms
         private System.Windows.Forms.Label ServerPingTypeLabel;
         private System.Windows.Forms.RadioButton TCPingRadioBtn;
         private System.Windows.Forms.RadioButton ICMPingRadioBtn;
+        private System.Windows.Forms.CheckBox ICMPForwardCheckBox;
     }
 }

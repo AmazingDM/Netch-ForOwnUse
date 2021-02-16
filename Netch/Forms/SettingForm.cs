@@ -126,6 +126,10 @@ namespace Netch.Forms
                 s => Global.Settings.UDPServer = s,
                 Global.Settings.UDPServer);
 
+            BindCheckBox(ICMPForwardCheckBox,
+                s => Global.Settings.ICMPForward = s,
+                Global.Settings.ICMPForward);
+
             #endregion
 
             #region TUN/TAP

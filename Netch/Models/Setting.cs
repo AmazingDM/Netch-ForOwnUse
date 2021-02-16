@@ -301,5 +301,10 @@ namespace Netch.Models
         ///     进程模式打印已代理IP日志 5s/次 ProcessProxyIP.log中循环打印
         /// </summary>
         public bool ProcessProxyIPLog = false;
+
+        /// <summary>
+        ///     进程模式打印已代理IP日志 5s/次 ProcessProxyIP.log中循环打印
+        /// </summary>
+        public bool ICMPForward = false;
     }
 }

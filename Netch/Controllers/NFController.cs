@@ -77,6 +77,10 @@ namespace Netch.Controllers
             if (Global.Settings.ProcessNoProxyForTcp)
                 aio_dial((int)NameList.TYPE_FILTERTCP, "false");
 
+            //ICMP
+            if (Global.Settings.ICMPForward)
+                aio_dial((int)NameList.TYPE_FILTERICMP, "true");
+
             //设置TCP & UDP 代理服务器
             SetServer();
 
@@ -114,7 +118,8 @@ namespace Netch.Controllers
                         aio_getPIP(buffer);
                         string retStr = Encoding.ASCII.GetString(buffer);
                         retStr = retStr.Substring(0, retStr.IndexOf("\0"));
-                        saveProcessProxyIPLog(retStr);
+                        if (Global.Settings.ProcessProxyIPLog)
+                            saveProcessProxyIPLog(retStr);
                     }
                 }).Start();
             }
@@ -377,6 +382,7 @@ namespace Netch.Controllers
             TYPE_FILTERTCP,
             TYPE_FILTERUDP,
             TYPE_FILTERIP,
+            TYPE_FILTERICMP,
 
             TYPE_PRINTFILTERIP,
 
